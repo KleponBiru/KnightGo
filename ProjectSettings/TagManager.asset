@@ -9,6 +9,8 @@ TagManager:
   - DestroyableWall
   - DestroyableGround
   - Enemy
+  - AdditionalEnemy
+  - Radar
   layers:
   - Default
   - TransparentFX
