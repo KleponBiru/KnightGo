@@ -2,28 +2,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement;  
+using System.IO;
 
 public class RunStart : MonoBehaviour
 {
     public PlayerMovement playerMovement;
     public DefeatComing defeatComing;
     public WinTrigger winTrigger;
+    public SaveManager saveManager;
 
     public Canvas canvas;
 
     public GameObject panelStart;
     public Button runButton;
+    public Button continueVButton;
     public Button surrendButton;
 
     public GameObject panelWin;
     public Button nextButton;
     public Button winRestartButton;
+    public Button exitMenuButton;
 
     public GameObject panelDefeat;
-    public Button loseRestartButton;
+    public Button exitButton;
+    public Button defeatRestartButton;
 
     public GameObject panelSkill;
+
+    public class SceneData
+    {
+        public string level;
+    }
 
     void Start()
     {
@@ -33,6 +43,15 @@ public class RunStart : MonoBehaviour
         panelSkill.SetActive(false); //matiin panelSkill
         
         runButton.onClick.AddListener(RunButtonClicked); //panggil RunButtonClicked
+        continueVButton.enabled = false;
+        
+        string loadJson = File.ReadAllText(Application.dataPath+"/SaveFile.json");
+        SceneData loadData = JsonUtility.FromJson<SceneData>(loadJson);
+        if(loadData.level == "game1")
+        {
+            continueVButton.enabled = true;
+            continueVButton.onClick.AddListener(ContinueButtonClicked);
+        }
         surrendButton.onClick.AddListener(SurrendButtonClicked); //panggil SurrendButtonClicked
     }
 
@@ -45,9 +64,13 @@ public class RunStart : MonoBehaviour
             canvas.enabled = true;
             panelWin.SetActive(true);
             panelSkill.SetActive(false);
+            
             nextButton.onClick.AddListener(NextButtonClicked);
             winRestartButton.onClick.AddListener(RestartButtonClicked);
+            exitMenuButton.onClick.AddListener(ExitButtonClicked);
             playerMovement.canMove = false; //berentiin player
+
+            saveManager.SaveData();
         }
 
         if(playerMovement.dead == true)
@@ -57,7 +80,9 @@ public class RunStart : MonoBehaviour
             canvas.enabled = true;
             panelDefeat.SetActive(true);
             panelSkill.SetActive(false);
-            loseRestartButton.onClick.AddListener(RestartButtonClicked);
+
+            exitButton.onClick.AddListener(ExitButtonClicked);
+            defeatRestartButton.onClick.AddListener(RestartButtonClicked);
         }
     }
 
@@ -71,6 +96,11 @@ public class RunStart : MonoBehaviour
         panelStart.SetActive(false); //matiin panelStart biar ga muncul kalo kalah / menang
     }
 
+    public void ContinueButtonClicked()
+    {
+        SceneManager.LoadScene("Game2");
+    }
+
     public void SurrendButtonClicked()
     {
         // Debug.Log("Exit clicked");
@@ -80,6 +110,7 @@ public class RunStart : MonoBehaviour
     public void NextButtonClicked()
     {
         // Debug.Log("NextButton clicked");
+        SceneManager.LoadScene("Game2");
     }
 
     public void RestartButtonClicked()
@@ -87,5 +118,21 @@ public class RunStart : MonoBehaviour
         //ulang level
         Scene currentScene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(currentScene.name);
+    }
+
+    public void ExitButtonClicked()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+        
+        canvas.enabled = true;
+        panelDefeat.SetActive(false);
+        panelWin.SetActive(false);
+        Invoke("delay", 5f);
+    }
+
+    public void delay()
+    {
+        panelStart.SetActive(true);
     }
 }

@@ -9,13 +9,41 @@ public class AdditionalEnemy : MonoBehaviour
     public Animator animator;
 
     private Collider2D collider;
+    private Rigidbody2D rb2d;
+    private SpriteRenderer sprite;
 
-    public float speed = 0f;
+    public float speed;
     public bool isDeath = false;
+
+    public GameObject enemy;
+    public Vector3 enemyPosition;
+    public GameObject target;
+    public Vector3 targetDestination;
+    public float distance;
+    public float radius;
 
     void Start()
     {
         collider = GetComponent<CapsuleCollider2D>();
+        rb2d = GetComponent<Rigidbody2D>();
+        sprite = GetComponent<SpriteRenderer>();
+    }
+
+    void Update()
+    {
+        targetDestination = target.transform.position;
+        enemyPosition = enemy.transform.position;
+        distance = Vector3.Distance(enemyPosition, targetDestination);
+
+        if(distance <= radius)
+        {
+            animator.SetFloat("Speed", 1);
+            Invoke("Chase", 0.5f);
+        }
+        else if(distance > radius)
+        {
+            animator.SetFloat("Speed", 0);
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -24,10 +52,13 @@ public class AdditionalEnemy : MonoBehaviour
         {
             if(playerMovement.canDash == false)
             {
+                isDeath = true;
+                
                 animator.SetFloat("Speed", 0);
                 animator.SetBool("isDeath", true);
-                collider.isTrigger = true; //biar bisa dilewatin
 
+                rb2d.velocity = new Vector3(0f,0f,0f);
+                
                 FadeOut();
                 Invoke("DestroySelf", 2f);
             }
@@ -51,5 +82,24 @@ public class AdditionalEnemy : MonoBehaviour
     void DestroySelf()
     {
         Destroy(gameObject);
+    }
+
+    public void Chase()
+    {
+        // enemy.transform.position = distance * Time.deltaTime * speed;
+        // enemy.transform.position = Vector3.Lerp(enemyPosition, targetDestination, speed * Time.deltaTime);
+
+        if(rb2d.transform.position.x > target.transform.position.x && isDeath == false)
+        {
+            speed = 5f;
+            rb2d.velocity = Vector3.left * speed;
+            sprite.flipX = true;
+        }
+        else if(rb2d.transform.position.x < target.transform.position.x && isDeath == false)
+        {
+            speed = 5f;
+            rb2d.velocity = Vector3.right * speed;
+            sprite.flipX = false;
+        }
     }
 }
