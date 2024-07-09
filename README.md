@@ -20,5 +20,5 @@ D - Move Right<br>
 Space - Jump<br>
 LeftShift - Dash<br>
 
-If you encounter problem, feel free to contact me
+<br>If you encounter problem, feel free to contact me
 Thank you
