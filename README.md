@@ -1,5 +1,7 @@
 <h1>KnightGo</h1>
 
+![KnightGoGIF](https://github.com/KleponBiru/KnightGo/assets/159217810/8b49d462-3c21-44c9-add9-cec4adc878b2)
+
 <p>
   KnightGo is a two-Dimensional platformer game build for PC, where player is trying to warn the village about the monster horde. 
 </p>
